@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday</title>
+  <meta name="description" content="An interactive birthday celebration with animated fireworks." />
+  <meta name="theme-color" content="#07070a" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- Animated fireworks background -->
+  <canvas id="fireworks-canvas" aria-hidden="true"></canvas>
+
+  <!-- Cursor-following ambient glow (decorative, disabled on touch / reduced motion) -->
+  <div class="cursor-glow" aria-hidden="true"></div>
+
+  <!-- Fixed UI chrome -->
+  <header class="chrome chrome--top-left">
+    <span class="status-dot" aria-hidden="true"></span>
+    <span class="mono-label">Celebration&nbsp;live</span>
+  </header>
+
+  <footer class="chrome chrome--bottom">
+    <span class="mono-label">Click anywhere to ignite fireworks</span>
+  </footer>
+
+  <!-- Hero -->
+  <main class="hero">
+    <p class="hero__eyebrow mono-label">A celebration for</p>
+    <h1 class="hero__name" id="guest-name" aria-live="polite"></h1>
+    <p class="hero__greeting">Happy Birthday</p>
+  </main>
+
+  <!-- Welcome panel: collects the guest's name -->
+  <div class="invite-overlay" id="name-modal" role="dialog" aria-modal="true" aria-labelledby="invite-title">
+    <div class="invite-panel">
+      <span class="invite-panel__mark" aria-hidden="true">+</span>
+
+      <p class="invite-panel__eyebrow mono-label">Personalize the show</p>
+      <h2 class="invite-panel__title" id="invite-title">Who's celebrating<br />today?</h2>
+
+      <form class="invite-panel__form" id="name-form" novalidate>
+        <label class="field">
+          <span class="field__label mono-label">Name</span>
+          <input
+            type="text"
+            id="name-input"
+            class="field__input"
+            placeholder="Type your name"
+            maxlength="40"
+            autocomplete="off"
+            autofocus
+          />
+        </label>
+
+        <button type="submit" class="btn-mono">
+          <span>Launch fireworks</span>
+          <span class="btn-mono__arrow" aria-hidden="true">&rarr;</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
