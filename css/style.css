@@ -1,0 +1,425 @@
+/**
+ * @file style.css
+ * @description Premium birthday celebration theme — editorial / studio aesthetic.
+ *
+ * Structure:
+ *   1. Reset
+ *   2. Design tokens
+ *   3. Base styles
+ *   4. Shared utility: .mono-label
+ *   5. Cursor glow
+ *   6. Fixed UI chrome
+ *   7. Hero
+ *   8. Invite panel + form
+ *   9. CTA button
+ *  10. Keyframe animations
+ *  11. Responsive
+ *  12. Accessibility overrides
+ */
+
+/* ─── 1. Reset ────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Match the accent color so selected text feels intentional, not accidental. */
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* ─── 2. Design tokens ────────────────────────────────────────────────────── */
+
+:root {
+  /* Background: near-black with a barely-perceptible blue-tint so pure black
+     doesn't feel flat against the colorful fireworks. */
+  --bg:      #07070a;
+  --bg-soft: #0d0d12;
+
+  /* Warm off-white keeps text from feeling clinical on a dark canvas. */
+  --ink:       #f3efe9;
+  --ink-muted: rgba(243, 239, 233, 0.58);
+  --ink-faint: rgba(243, 239, 233, 0.32);
+
+  /* Accent: bold orange-red used sparingly (dots, eyebrows, button, glow). */
+  --accent:     #ff4d1c;
+  --accent-ink: #0a0a0a; /* near-black text on the accent background, per WCAG contrast */
+
+  /* Hairlines: subtle borders that separate surfaces without heavy lines. */
+  --hairline:        rgba(243, 239, 233, 0.14);
+  --hairline-strong: rgba(243, 239, 233, 0.26);
+
+  /* Font stack: serif for display type, mono for UI labels, sans for body copy. */
+  --font-serif: 'Fraunces', 'Iowan Old Style', 'Georgia', serif;
+  --font-mono:  'IBM Plex Mono', ui-monospace, SF Mono, Menlo, monospace;
+  --font-sans:  'Inter', 'Segoe UI', system-ui, sans-serif;
+
+  /* A single shared easing used for all transitions — feels premium,
+     not the default CSS ease-out. */
+  --ease-premium: cubic-bezier(0.19, 1, 0.22, 1);
+  --duration-base: 0.45s;
+}
+
+/* ─── 3. Base styles ──────────────────────────────────────────────────────── */
+
+html,
+body {
+  height: 100%;
+  overflow: hidden; /* no scrolling — the viewport is the entire experience */
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--ink);
+  background: var(--bg);
+  /* Crosshair signals to the visitor that clicking anywhere launches a firework. */
+  cursor: crosshair;
+  -webkit-font-smoothing: antialiased;
+}
+
+#fireworks-canvas {
+  position: fixed;
+  inset: 0;
+  display: block;
+  z-index: 0;
+}
+
+/* ─── 4. Shared utility: .mono-label ─────────────────────────────────────── */
+
+/* Used on chrome labels, form field labels, eyebrow text, and the CTA button.
+   Consistent mono + tracking + uppercase gives the UI a refined studio feel. */
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem; /* 11px */
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+/* ─── 5. Cursor glow ──────────────────────────────────────────────────────── */
+
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 520px;
+  height: 520px;
+  /* Offset by half the element's size so the glow is centered on the cursor,
+     not anchored at the top-left corner of the div. */
+  margin: -260px 0 0 -260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 77, 28, 0.14) 0%, transparent 70%);
+  /* CSS custom properties --x and --y are set by JS on pointermove. */
+  transform: translate(var(--x, -9999px), var(--y, -9999px));
+  pointer-events: none;
+  z-index: 1;
+  /* Screen blending adds light to whatever's beneath (the fireworks canvas),
+     rather than covering it with a tinted overlay. */
+  mix-blend-mode: screen;
+  /* Compositor-layer hint so pointer-move updates don't repaint the canvas. */
+  will-change: transform;
+}
+
+/* ─── 6. Fixed UI chrome ──────────────────────────────────────────────────── */
+
+.chrome {
+  position: fixed;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  user-select: none;
+  pointer-events: none;
+}
+
+.chrome--top-left {
+  top:  clamp(1.25rem, 3vw, 2.5rem);
+  left: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+.chrome--bottom {
+  bottom: clamp(1.25rem, 3vw, 2.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Pulsing dot visually confirms the animation is live, like a "recording" indicator. */
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0 rgba(255, 77, 28, 0.6);
+  animation: pulse-dot 2.4s var(--ease-premium) infinite;
+}
+
+@keyframes pulse-dot {
+  0%   { box-shadow: 0 0 0 0   rgba(255, 77, 28, 0.55); }
+  70%  { box-shadow: 0 0 0 7px rgba(255, 77, 28, 0); }
+  100% { box-shadow: 0 0 0 0   rgba(255, 77, 28, 0); }
+}
+
+/* ─── 7. Hero ─────────────────────────────────────────────────────────────── */
+
+.hero {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  width: min(92vw, 1000px);
+  text-align: center;
+  user-select: none;
+  pointer-events: none;
+}
+
+.hero__eyebrow {
+  color: var(--accent);
+  margin-bottom: 1.1rem;
+}
+
+.hero__name {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(2.75rem, 9vw, 6.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  /* Reserves the line's height before a name is entered, preventing "Happy Birthday"
+     from jumping downward once the panel is dismissed. */
+  min-height: 1.1em;
+  /* Diffuse warm glow makes the name feel lit from within by the fireworks. */
+  text-shadow: 0 0 60px rgba(255, 77, 28, 0.18);
+}
+
+.hero__greeting {
+  margin-top: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: clamp(0.75rem, 1.4vw, 0.9rem);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* ─── 8. Invite panel + form ──────────────────────────────────────────────── */
+
+.invite-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(7, 7, 10, 0.72);
+  backdrop-filter: blur(14px);
+  animation: overlay-in var(--duration-base) var(--ease-premium) both;
+}
+
+/* Replaced by overlay-out when .is-closing is applied via JS before DOM removal. */
+.invite-overlay.is-closing {
+  animation: overlay-out 0.35s var(--ease-premium) both;
+}
+
+.invite-panel {
+  position: relative;
+  width: min(440px, 100%);
+  padding: clamp(2.25rem, 5vw, 3.25rem) clamp(2rem, 5vw, 2.75rem);
+  /* Subtle gradient instead of flat dark: the slightly lighter top edge
+     separates the panel from the overlay without needing a heavy border glow. */
+  background: linear-gradient(180deg, var(--bg-soft), var(--bg));
+  border: 1px solid var(--hairline);
+  box-shadow: 0 50px 100px -30px rgba(0, 0, 0, 0.7);
+  animation: panel-in 0.55s var(--ease-premium) both;
+}
+
+/* Decorative corner mark — a typographic accent common in studio / editorial design. */
+.invite-panel__mark {
+  position: absolute;
+  top:   clamp(1.25rem, 3vw, 1.75rem);
+  right: clamp(1.25rem, 3vw, 1.75rem);
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: var(--accent);
+}
+
+.invite-panel__eyebrow {
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+}
+
+.invite-panel__title {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-style: italic;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  line-height: 1.15;
+  margin-bottom: 2.25rem;
+}
+
+.invite-panel__form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Editorial text field — bottom-border only, no box, for a cleaner open look. */
+.field {
+  display: block;
+}
+
+.field__label {
+  display: block;
+  margin-bottom: 0.65rem;
+  color: var(--ink-faint);
+}
+
+.field__input {
+  width: 100%;
+  padding: 0.35rem 0 0.75rem;
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-style: italic;
+  color: var(--ink);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--hairline-strong);
+  outline: none;
+  transition: border-color var(--duration-base) var(--ease-premium);
+}
+
+/* Layering opacity on top of the already-translucent color prevents browsers
+   that render rgba placeholders at full opacity from ignoring the fade. */
+.field__input::placeholder {
+  color: var(--ink-faint);
+  opacity: 0.7;
+}
+
+.field__input:focus-visible {
+  border-color: var(--accent);
+}
+
+/* ─── 9. CTA button ───────────────────────────────────────────────────────── */
+
+/* Mono uppercase + accent background mirrors the reference badge style.
+   Hover inverts to transparent + accent text, keeping the border for structure. */
+.btn-mono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem; /* 11px — deliberately small for the badge aesthetic */
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  cursor: pointer;
+  transition:
+    background var(--duration-base) var(--ease-premium),
+    color     var(--duration-base) var(--ease-premium);
+}
+
+.btn-mono:hover {
+  background: transparent;
+  color: var(--accent);
+}
+
+.btn-mono__arrow {
+  transition: transform var(--duration-base) var(--ease-premium);
+}
+
+.btn-mono:hover .btn-mono__arrow {
+  transform: translateX(4px);
+}
+
+.btn-mono:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ─── 10. Keyframe animations ─────────────────────────────────────────────── */
+
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes overlay-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes panel-in {
+  from { opacity: 0; transform: translateY(18px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);     }
+}
+
+/* ─── 11. Responsive ──────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  /* Center the bottom hint without it wrapping awkwardly on narrow screens. */
+  .chrome--bottom {
+    width: 92vw;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  /* The status label beside the dot is redundant on small screens — the dot alone reads fine. */
+  .chrome--top-left .mono-label {
+    display: none;
+  }
+
+  .invite-panel {
+    padding: 2rem 1.5rem;
+  }
+
+  /* Corner mark clips outside safe area on very small viewports. */
+  .invite-panel__mark {
+    display: none;
+  }
+}
+
+/* ─── 12. Accessibility overrides ─────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Remove all non-essential motion while keeping the UI fully functional. */
+  .status-dot,
+  .invite-overlay,
+  .invite-panel {
+    animation: none;
+  }
+
+  .cursor-glow {
+    display: none;
+  }
+}
+
+@media (hover: none) {
+  /* Cursor glow is meaningless on touch-only devices — hide it entirely. */
+  .cursor-glow {
+    display: none;
+  }
+}
+
+/* Screen-reader-only utility — visually hidden but still in the accessibility tree. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
