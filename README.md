@@ -147,4 +147,5 @@ Each frame is not cleared — instead a near-opaque dark fill is composited with
 
 ---
 
-<p align="center">Built with vanilla web standards. No frameworks were harmed.</p>
+<p align="center">Built with vanilla web standards. No frameworks were harmed. Built by Mohammad Irshaad Aalam</p>
+
